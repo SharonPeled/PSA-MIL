@@ -1,4 +1,4 @@
-# PSA-MIL: Probabilistic Spatial Attention-Based MIL for Whole Slide Image Classification  
+# PSA-MIL: Probabilistic Spatial Attention-Based Multiple Instance Learning for Whole Slide Image Classification  
 ### 📝 Under Review at ICCV 2025  
 
 
