@@ -1,5 +1,4 @@
 # PSA-MIL: Probabilistic Spatial Attention-Based Multiple Instance Learning for Whole Slide Image Classification  
-### 📝 Under Review at ICCV 2025  
 
 
 ![SOTA Performance](https://img.shields.io/badge/SOTA-✔️-green)
