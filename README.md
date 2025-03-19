@@ -100,5 +100,5 @@ See config_files/train_PSA_MIL_classifier.yaml for available configs and additio
 ---
 
 
-## **5. References**
+## **5. Reference**
 _To be updated._
