@@ -1,0 +1,33 @@
+# saving (outputs)
+EXPERIMENT_SAVE_ARTIFACTS_DIR: "/path/to/experiments/artifacts/saving/dir"
+DF_TILES_PATH: "/path/to/df_tiles"  # path to df_tiles
+EXPERIMENT_NAME: ''
+RUN_NAME: ''
+
+# filters
+MIN_TILES_PER_SLIDE: 100
+
+# general
+RANDOM_SEED: 1234
+VERBOSE: 2  # 1 logs to LOG_FILE, 2 logs to console, 3 logs to both to file and console
+LOG_IMPORTANCE: 1  # 0 (all), 1 or 2 (only high importance logs)
+PROGRAM_LOG_FILE_ARGS: null  # only to console
+LOG_FORMAT:
+  format: '%(process)d  %(asctime)s  [%(name)s] - %(message)s'
+  datefmt: '%d-%m-%y %H:%M:%S'
+
+# task related configs
+COHORT_TO_IND: null
+
+# saving configs
+DEVICE_ID: 0
+BATCH_SIZE: 100
+NUM_WORKERS: 2
+
+# backbone
+TILE_ENCODER_LOADING_ARGS:
+  tile_encoder_name: 'SSL_VIT_PRETRAINED'
+
+
+
+

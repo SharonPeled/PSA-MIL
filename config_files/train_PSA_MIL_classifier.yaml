@@ -1,0 +1,135 @@
+# ================================
+# MLflow Experiment Configuration
+# ================================
+
+EXPERIMENT_NAME: "Example_Experiment"  # Name of the MLflow experiment
+RUN_NAME: "Example_Run"  # Unique name for the run within the experiment
+RUN_DESCRIPTION: "Description of this run"  # Optional description of the run
+MLFLOW_DIR: "/path/to/mlflow/directory"  # Directory where MLflow logs and artifacts are stored
+
+# ================================
+# General Settings
+# ================================
+
+RANDOM_SEED: 1234  # Random seed for reproducibility
+VERBOSE: 2  # Logging verbosity: 1 (log to file), 2 (log to console), 3 (log to both)
+LOG_IMPORTANCE: 1  # Log filtering: 0 (all logs), 1 (important logs only), 2 (high importance logs only)
+
+PROGRAM_LOG_FILE_ARGS:   # Arguments related to logging (optional)
+LOG_FORMAT:
+  format: '%(process)d  %(asctime)s  [%(name)s] - %(message)s'  # Log format template
+  datefmt: '%d-%m-%y %H:%M:%S'  # Date format for logs
+
+# ================================
+# Data Files (Input)
+# ================================
+
+DF_LABELS_PATH: "/path/to/labels.csv"
+# Path to the CSV file containing labels for classification (e.g., MSI vs. MSS)
+
+DF_TILE_EMBEDDINGS_PATH: "/path/to/tile_embeddings.csv"
+# Path to the CSV file containing tile embeddings (features extracted from tiles)
+
+# ================================
+# Saving (Output)
+# ================================
+
+EXPERIMENT_SAVE_ARTIFACTS_DIR: "/path/to/save/experiments"
+# Directory where experiment artifacts (models, logs, etc.) will be saved
+
+SAVE_MODEL: false  # Whether to save the trained model (true/false)
+SAVE_DF_TEST: false  # Whether to save the test dataset predictions
+SAVE_DF_TRAIN: false  # Whether to save the training dataset predictions
+SAVE_DF_PRED_TEST: false  # Whether to save test set prediction results
+SAVE_DF_PRED_TRAIN: false  # Whether to save training set prediction results
+
+# ================================
+# Task and Labels
+# ================================
+
+LABEL_COL: 'msi_status'  # Name of the column in the dataset that contains the label
+TASK: classification  # Task type (e.g., 'classification', 'regression')
+
+CLASS_TO_IND:
+  MSS: 0  # Class index for 'MSS'
+  MSI: 1  # Class index for 'MSI'
+
+COHORT_TO_IND:
+  CRC: 0  # Cohort index for 'CRC'
+
+# ================================
+# Cross-validation
+# ================================
+
+NUM_FOLDS: 5  # Number of folds for cross-validation
+CONTINUE_FROM_FOLD:  # Resume training from a specific fold (if applicable)
+SINGLE_FOLD: false  # Whether to use only a single fold instead of cross-validation
+STRATIFIED_COLS: ['y', ]  # Columns to use for stratified sampling in cross-validation
+
+# ================================
+# Training Settings
+# ================================
+
+NUM_EPOCHS: 15  # Total number of epochs for training
+CONCAT_TRAIN_TO_SINGLE_EPOCH: true
+# If true, concatenates all training samples into one epoch (for faster convergence)
+
+NUM_DEVICES: 1  # Number of GPUs to use
+NUM_NODES: 1  # Number of compute nodes
+DEVICE: 'gpu'  # Device to use for training ('cpu' or 'gpu')
+
+TEST_BATCH_SIZE: 8  # Batch size for testing
+TRAIN_BATCH_SIZE: 8  # Batch size for training
+NUM_WORKERS_TRAIN: 6  # Number of workers for loading training data
+NUM_WORKERS_TEST: 1  # Number of workers for loading test data
+
+# ================================
+# Optimization
+# ================================
+
+LEARNING_RATE_PAIRS: '[0, [(1e-6, 0.1), (1e-4, 0.9), (1e-4, -1), (1e-6, None)]]'
+# Learning rate scheduling:
+# Format: [schedule type, [(lr1, scale1), (lr2, scale2), ...]]
+# Example: Uses linear scheduling where learning rates decay over time
+
+WEIGHT_DECAY_PAIRS: '[0, [(0, 0.1), (0, 0.9), (0, -1), (0, None)]]'
+# Weight decay settings for regularization
+
+GRAD_CLIP: 5  # Gradient clipping threshold to prevent exploding gradients
+SLIDE_WEIGHTING_STRATEGY: 'class_balance'
+# Strategy to balance class weights in training (e.g., 'class_balance', 'uniform')
+
+# ================================
+# Bagging (Ensemble Training)
+# ================================
+
+VALIDATION_SIZE:  # Placeholder for validation size (optional)
+VAL_METRIC: 'total_auc'  # Metric to use for validation (e.g., 'accuracy', 'auc', 'f1-score')
+NUM_MODELS: 3  # Number of models to train in an ensemble
+
+# ================================
+# Network Configuration
+# ================================
+
+EMBED_DIM: 384  # Embedding dimension for feature representation
+NUM_RESIDUAL_LAYERS: 2  # Number of residual layers in the model
+
+DEPTH: 1  # Depth of the network (number of layers)
+QKV_BIAS: true  # Whether to use bias in the QKV (query-key-value) attention layers
+POOL_TYPE: attention  # Type of pooling layer (e.g., 'attention', 'max', 'avg')
+NUM_HEADS: 3  # Number of attention heads in multi-head attention
+ATTN_DIM: 32  # Dimension of attention layers
+
+PREDEFINED_COHORT_SPLIT:  # Placeholder for predefined cohort splits (if applicable)
+PATCH_DROP_RATE: !!float '0'  # Dropout rate for patches in training
+
+# ================================
+# Regularization Terms
+# ================================
+
+REG_TERMS:
+  DECAY_TYPE: Gaussian  # Type of weight decay (e.g., 'Gaussian', 'Exponential')
+  ALPHA: 0.001  # Weight decay alpha coefficient
+  DECAY_CLIP: 0.001  # Clip value for decay
+  DECAY_LR_SCALE: 120  # Scale factor for decay learning rate
+

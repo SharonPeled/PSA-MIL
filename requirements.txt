@@ -1,0 +1,14 @@
+torch
+torchvision
+Pillow
+scikit-learn
+numpy
+pandas
+matplotlib
+PyYAML
+timm
+pytorch-lightning
+tqdm
+opencv-python
+mlflow
+
