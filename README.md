@@ -100,4 +100,10 @@ See config_files/train_PSA_MIL_classifier.yaml for available configs and additio
 
 
 ## **5. Reference**
-_To be updated._
+```
+@article{peled2025psa,
+  title={PSA-MIL: A Probabilistic Spatial Attention-Based Multiple Instance Learning for Whole Slide Image Classification},
+  author={Peled, Sharon and Maruvka, Yosef E and Freiman, Moti},
+  journal={arXiv preprint arXiv:2503.16284},
+  year={2025}
+}
