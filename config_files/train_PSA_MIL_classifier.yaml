@@ -72,7 +72,7 @@ STRATIFIED_COLS: ['y', ]  # Columns to use for stratified sampling in cross-vali
 
 NUM_EPOCHS: 15  # Total number of epochs for training
 CONCAT_TRAIN_TO_SINGLE_EPOCH: true
-# If true, concatenates all training samples into one epoch (for faster convergence)
+# If true, concatenates all training samples into one epoch (for easier scheduling)
 
 NUM_DEVICES: 1  # Number of GPUs to use
 NUM_NODES: 1  # Number of compute nodes
@@ -90,37 +90,40 @@ NUM_WORKERS_TEST: 1  # Number of workers for loading test data
 LEARNING_RATE_PAIRS: '[0, [(1e-6, 0.1), (1e-4, 0.9), (1e-4, -1), (1e-6, None)]]'
 # Learning rate scheduling:
 # Format: [schedule type, [(lr1, scale1), (lr2, scale2), ...]]
-# Example: Uses linear scheduling where learning rates decay over time
+# Schedule type - 0 linear, 1 cosine
+# Example: [0, [(1e-6, 0.1), (1e-4, 0.9), (1e-4, -1), (1e-6, None)]]
+# Linear scheduling, initial 10% of steps would be linearly scheduled from 1e-6 to 1e-4.
+# Out of the remaining steps, 90% of steps would be scheduled from 1e-4 to 1e-4 (constant 1e-4).
+# Then, from 1e-4 to 1e-6 for the remaining steps.
 
 WEIGHT_DECAY_PAIRS: '[0, [(0, 0.1), (0, 0.9), (0, -1), (0, None)]]'
 # Weight decay settings for regularization
 
-GRAD_CLIP: 5  # Gradient clipping threshold to prevent exploding gradients
+GRAD_CLIP:   # Gradient clipping threshold
 SLIDE_WEIGHTING_STRATEGY: 'class_balance'
-# Strategy to balance class weights in training (e.g., 'class_balance', 'uniform')
+# Strategy to balance class weights in training (e.g., 'class_balance', None)
 
 # ================================
 # Bagging (Ensemble Training)
 # ================================
 
 VALIDATION_SIZE:  # Placeholder for validation size (optional)
-VAL_METRIC: 'total_auc'  # Metric to use for validation (e.g., 'accuracy', 'auc', 'f1-score')
-NUM_MODELS: 3  # Number of models to train in an ensemble
+VAL_METRIC: 'total_auc'  # Metric to use for choosing best model on validation
+NUM_MODELS: 3  # Number of best models to use in final ensemble
 
 # ================================
 # Network Configuration
 # ================================
 
-EMBED_DIM: 384  # Embedding dimension for feature representation
-NUM_RESIDUAL_LAYERS: 2  # Number of residual layers in the model
+EMBED_DIM: 384  # Patch embedding dimension
+NUM_RESIDUAL_LAYERS: 2  # Adapter depth (number of first FC layers)
 
-DEPTH: 1  # Depth of the network (number of layers)
+DEPTH: 1
 QKV_BIAS: true  # Whether to use bias in the QKV (query-key-value) attention layers
 POOL_TYPE: attention  # Type of pooling layer (e.g., 'attention', 'max', 'avg')
 NUM_HEADS: 3  # Number of attention heads in multi-head attention
 ATTN_DIM: 32  # Dimension of attention layers
 
-PREDEFINED_COHORT_SPLIT:  # Placeholder for predefined cohort splits (if applicable)
 PATCH_DROP_RATE: !!float '0'  # Dropout rate for patches in training
 
 # ================================
@@ -128,8 +131,8 @@ PATCH_DROP_RATE: !!float '0'  # Dropout rate for patches in training
 # ================================
 
 REG_TERMS:
-  DECAY_TYPE: Gaussian  # Type of weight decay (e.g., 'Gaussian', 'Exponential')
+  DECAY_TYPE: Gaussian  # Type of weight decay (e.g., 'Gaussian', 'Exponential', 'Cauchy')
   ALPHA: 0.001  # Weight decay alpha coefficient
-  DECAY_CLIP: 0.001  # Clip value for decay
+  DECAY_CLIP: 0.001  # Clip value for decay (tau in the paper)
   DECAY_LR_SCALE: 100  # Scale factor for decay learning rate
 
