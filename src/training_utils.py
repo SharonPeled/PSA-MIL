@@ -12,47 +12,23 @@ from torch.multiprocessing import set_sharing_strategy
 import pytorch_lightning as pl
 from PIL import Image
 from copy import deepcopy
-from src.components.models.CohortAwareVisionTransformer import CohortAwareVisionTransformer
 from datetime import datetime
 from pytorch_lightning.strategies import DDPStrategy
 import os
 from src.components.objects.SaveAndLogOutputsCallback import SaveAndLogOutputsCallback
-from torchvision.models.resnet import Bottleneck, ResNet
 
 
 def train(df, train_transform, test_transform, logger, callbacks, model, dataset_fn, split_obj=None, **kwargs):
-    if Configs.get('PREDEFINED_COHORT_SPLIT') is not None:
-        split_obj = create_predefined_cohort_split_obj_generator(df, Configs.get('PREDEFINED_COHORT_SPLIT'))
-    elif Configs.get('PREDEFINED_SPLIT_COL') is not None:
-        split_obj = create_predefined_split_obj_generator(df, Configs.get('PREDEFINED_SPLIT_COL'))
-    elif split_obj is None:
-        split_obj = train_test_valid_split_patients_stratified(df,
-                                                               stratified_cols=Configs.get('STRATIFIED_COLS'),
-                                                               num_folds=Configs.get('NUM_FOLDS'),
-                                                               random_seed=Configs.get('RANDOM_SEED'))
-    else:
-        Logger.log(f'Custom split object is used.', log_importance=1)
+    split_obj = train_test_valid_split_patients_stratified(df,
+                                                           stratified_cols=Configs.get('STRATIFIED_COLS'),
+                                                           num_folds=Configs.get('NUM_FOLDS'),
+                                                           random_seed=Configs.get('RANDOM_SEED'))
     cross_validate(df, split_obj, train_transform, test_transform, logger, model, callbacks, dataset_fn, **kwargs)
     Logger.log(f"Finished.", log_importance=1)
 
 
-def create_predefined_cohort_split_obj_generator(df, predefined_cohort_split):
-    train_inds = df[df.cohort.isin(predefined_cohort_split['TRAIN'])].index.values
-    test_inds = df[df.cohort.isin(predefined_cohort_split['TEST'])].index.values
-    yield train_inds, test_inds
-
-
-def create_predefined_split_obj_generator(df, split_col):
-    test_splits = df[split_col].unique()
-    for test_split in test_splits:
-        train_inds = df[~(df[split_col] == test_split)].index.values
-        test_inds = df[df[split_col] == test_split].index.values
-        yield train_inds, test_inds
-
-
 def cross_validate(df, split_obj, train_transform, test_transform, logger, model, callbacks, dataset_fn, **kwargs):
-    if Configs.get('TASK') == 'classification':
-        Logger.log(f"y value counts: {df.y.value_counts().to_dict()}", log_importance=1)
+    Logger.log(f"y value counts: {df.y.value_counts().to_dict()}", log_importance=1)
 
     for i, (train_inds, test_inds) in enumerate(split_obj):
 
@@ -201,57 +177,6 @@ def train_single_split(df_train, df_test, train_transform, test_transform, logge
     return model
 
 
-def init_training_transforms(tile_based):
-    if not tile_based:
-        # MIL
-        transform = transforms.Compose([
-            transforms.ToTensor()
-        ])
-        return transform, transform
-
-    from src.components.objects.RandStainNA.randstainna import RandStainNA
-
-    train_transform = transforms.Compose([
-        transforms.RandomApply([transforms.RandomResizedCrop(224, scale=(0.75, 1.0), interpolation=Image.BICUBIC), ],
-                               p=0.1),
-
-        transforms.Resize(224),
-
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomVerticalFlip(),
-
-        transforms.RandomApply([transforms.GaussianBlur(kernel_size=(5, 5), sigma=(0.25, 1)), ], p=0.1),
-
-        # transforms.RandomApply([transforms.RandomAdjustSharpness(sharpness_factor=2), ], p=0.1),
-
-        transforms.RandomApply([transforms.Grayscale(num_output_channels=3), ], p=0.2),  # grayscale 20% of the images
-        transforms.RandomApply([transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1)], p=0.8),
-
-        transforms.RandomApply([
-            RandStainNA(yaml_file=Configs.get('SSL_STATISTICS')['HSV'], std_hyper=0.01, probability=1.0, distribution="normal",
-                        is_train=True),
-            RandStainNA(yaml_file=Configs.get('SSL_STATISTICS')['HED'], std_hyper=0.01, probability=1.0, distribution="normal",
-                        is_train=True),
-            RandStainNA(yaml_file=Configs.get('SSL_STATISTICS')['LAB'], std_hyper=0.01, probability=1.0, distribution="normal",
-                        is_train=True)],
-            p=0.8),
-
-        transforms.Resize(224),
-        transforms.ToTensor(),
-
-        transforms.Normalize([0.485, 0.456, 0.406],
-                             [0.229, 0.224, 0.225])
-    ])
-
-    test_transform = transforms.Compose([
-        transforms.Resize(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406],
-                             [0.229, 0.224, 0.225])
-    ])
-    return train_transform, test_transform
-
-
 def lr_scheduler_linspace_steps(lr_pairs, tot_iters):
     left_iters = tot_iters - sum([num_iters for _, num_iters in lr_pairs[:-1] if num_iters > 1])
     lr_array = []
@@ -348,144 +273,4 @@ def train_test_valid_split_patients_stratified(df, stratified_cols, num_folds, r
         y_to_stratify = df[stratified_cols].apply(lambda row: '_'.join(map(str, row)), axis=1).values
     split = splitter.split(X=df, y=y_to_stratify, groups=df['patient_id'])
     return split
-
-
-def get_ssl_hist_pretrained_url(key):
-    url_prefix = "https://github.com/lunit-io/benchmark-ssl-pathology/releases/download/pretrained-weights"
-    model_zoo_registry = {
-        "DINO_p16": "dino_vit_small_patch16_ep200.torch",
-        "DINO_p8": "dino_vit_small_patch8_ep200.torch",
-        "BT": "bt_rn50_ep200.torch",
-        "MoCoV2": "mocov2_rn50_ep200.torch",
-        "SwAV": "swav_rn50_ep200.torch"
-    }
-    pretrained_url = f"{url_prefix}/{model_zoo_registry.get(key)}"
-    return pretrained_url
-
-
-def load_ssl_hist_vit_small(pretrained, progress, key):
-    model = VisionTransformer(
-        img_size=224, patch_size=16, embed_dim=384, num_heads=6, num_classes=0
-    )
-    if pretrained:
-        pretrained_url = get_ssl_hist_pretrained_url(key)
-        verbose = model.load_state_dict(
-            torch.hub.load_state_dict_from_url(pretrained_url, progress=progress)
-        )
-        Logger.log(verbose, log_importance=1)
-    return model
-
-
-def load_ssl_hist_vit_small_cohort_aware(pretrained, progress, key, cohort_aware_dict, **vit_kwargs):
-    model = CohortAwareVisionTransformer(
-        cohort_aware_dict=cohort_aware_dict,
-        img_size=224, patch_size=16, embed_dim=384, num_heads=6, num_classes=0, depth=12, **vit_kwargs
-    )
-    if pretrained:
-        pretrained_url = get_ssl_hist_pretrained_url(key)
-        model.load_pretrained_model(torch.hub.load_state_dict_from_url(pretrained_url, progress=progress))
-    return model
-
-
-def load_dino_vit_small_cohort_aware(ckp_path, cohort_aware_dict):
-    state_dict = torch.load(ckp_path, map_location="cpu")
-    state_dict = state_dict['teacher']
-    # remove `module.` prefix
-    state_dict = {k.replace("module.", ""): v for k, v in state_dict.items()}
-    # remove `backbone.` prefix induced by multi-crop wrapper
-    state_dict = {k.replace("backbone.", ""): v for k, v in state_dict.items()}
-    model = CohortAwareVisionTransformer(
-        cohort_aware_dict=cohort_aware_dict,
-        img_size=224, patch_size=16, embed_dim=384, num_heads=6, num_classes=0, depth=12
-    )
-    model.fc = nn.Identity()
-    msg = model.load_state_dict(state_dict, strict=False)
-    Logger.log(msg)
-    return model
-
-
-def load_headless_tile_encoder(tile_encoder_name, ckp_path=None, cohort_aware_dict=None):
-    if tile_encoder_name == 'IMAGENET_VIT_PRETRAINED':
-        model_name = 'vit_small_patch16_224'
-        # Load the pre-trained ViT model
-        model = timm.create_model(model_name, pretrained=True)
-        model.head = nn.Identity()
-        cohort_required = False
-        return model, model.num_features, cohort_required
-    elif tile_encoder_name == 'SSL_VIT_PRETRAINED':
-        model = load_ssl_hist_vit_small(pretrained=True, progress=False, key="DINO_p16")
-        cohort_required = False
-        return model, model.num_features, cohort_required
-    elif tile_encoder_name == 'SSL_VIT_PRETRAINED_COHORT_AWARE':  # tile ca?
-        model = load_ssl_hist_vit_small_cohort_aware(pretrained=True, progress=False, key="DINO_p16",
-                                                     cohort_aware_dict=cohort_aware_dict)
-        cohort_required = True
-        return model, model.num_features, cohort_required
-    elif tile_encoder_name == 'VIT_PRETRAINED_DINO':  # dino CA
-        model = load_dino_vit_small_cohort_aware(ckp_path=ckp_path, cohort_aware_dict=cohort_aware_dict)
-        cohort_required = True
-        return model, model.num_features, cohort_required
-    elif tile_encoder_name == 'SSL_RESNET_PRETRAINED':
-        model = load_ssl_hist_resnet50(pretrained=True, progress=False, key="BT")
-        model.num_features = 1000
-        return model, model.num_features, False
-    elif tile_encoder_name == 'ImageNet_RESNET_PRETRAINED':
-        model, _, _ = load_imagenet_resnet_model()
-        model.num_features = 1000
-        return model, model.num_features, False
-
-
-class ResNetTrunk(ResNet):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        del self.fc  # remove FC layer
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
-        x = self.maxpool(x)
-
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
-        x = self.avgpool(x).squeeze(-1).squeeze(-1)
-        return x
-
-def get_resent_pretrained_url(key):
-    URL_PREFIX = "https://github.com/lunit-io/benchmark-ssl-pathology/releases/download/pretrained-weights"
-    model_zoo_registry = {
-        "BT": "bt_rn50_ep200.torch",
-        "MoCoV2": "mocov2_rn50_ep200.torch",
-        "SwAV": "swav_rn50_ep200.torch",
-    }
-    pretrained_url = f"{URL_PREFIX}/{model_zoo_registry.get(key)}"
-    return pretrained_url
-
-
-def load_ssl_hist_resnet50(pretrained, progress, key, **kwargs):
-    model = ResNetTrunk(Bottleneck, [3, 4, 6, 3], **kwargs)
-    if pretrained:
-        pretrained_url = get_resent_pretrained_url(key)
-        verbose = model.load_state_dict(
-            torch.hub.load_state_dict_from_url(pretrained_url, progress=progress)
-        )
-        print(verbose)
-    return model
-
-
-def load_imagenet_resnet_model():
-    model_name = 'resnet50'  # Example: ResNet-50, you can choose other variants like resnet18, resnet34, etc.
-
-    # Load the pre-trained ResNet model
-    model = timm.create_model(model_name, pretrained=True)
-
-    # Replace the classification head with an identity layer (if you don't need the classifier)
-    model.fc = nn.Identity()  # ResNet uses 'fc' for the final fully connected layer
-
-    cohort_required = False
-    model.num_features = 1000
-
-    return model, model.num_features, cohort_required
 

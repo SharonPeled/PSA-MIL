@@ -25,23 +25,10 @@ class ConfigsSingletonClass:
                 self.config_dict['EXPERIMENT_NAME'] + '_' + self.config_dict['RUN_NAME']
             )
 
-        if self.config_dict.get('ATTN_MAP_SAVE_PATH'):
-            self.config_dict['ATTN_MAP_SAVE_PATH'] = os.path.join(
-                self.config_dict['ATTN_MAP_SAVE_PATH'],
-                self.config_dict['EXPERIMENT_NAME'] + '_' + self.config_dict['RUN_NAME']
-            )
-
-
-        if self.config_dict.get('TASK') == 'survival':
-            # has to specify a num_classes in survival configs
-            pass
-            # self.config_dict['NUM_CLASSES'] = 1  # a workaround to make it regression
-        elif self.config_dict.get('TASK') == 'classification' or self.config_dict.get('TASK') is None:
+        if self.config_dict.get('TASK') == 'classification' or self.config_dict.get('TASK') is None:
+            # default behaviour - classification
             self.config_dict['NUM_CLASSES'] = len(set(list(Configs.get('CLASS_TO_IND').values())))
             self.config_dict['TASK'] = 'classification'
-        else:
-            raise NotImplementedError
-
 
     def paste_current_time(self):
         time_str = get_time()

@@ -4,15 +4,14 @@ from src.components.objects.Logger import Logger
 from src.configs import Configs
 import matplotlib
 import warnings
+from src.tasks.train_MIL_classifier import train
 warnings.filterwarnings('ignore')
 matplotlib.use('agg')
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config_filepath', type=str, required=True)
-    parser.add_argument('--save-tile-embeddings', action='store_true')
-    parser.add_argument('--train-PSA-MIL-classifier', action='store_true')
+    parser.add_argument('-config_filepath', type=str, required=True)
 
     args = parser.parse_args()
 
@@ -28,14 +27,10 @@ def main():
                log_importance=1)
     Logger.log(f'Complete config file:\n{Configs.config_dict}')
 
-    if args.save_tile_embeddings:
-        from src.tasks.save_tile_embeddings import save_tile_embeddings
-        save_tile_embeddings()
 
-    if args.train_PSA_MIL_classifier:
-        from src.tasks.train_MIL_classifier import train
-        train(model_name='PSA')
+    train()
 
+    Logger.log(f'Finished!')
 
 if __name__ == "__main__":
     main()

@@ -48,7 +48,7 @@ SAVE_DF_PRED_TRAIN: false  # Whether to save training set prediction results
 # ================================
 
 LABEL_COL: 'msi_status'  # Name of the column in the dataset that contains the label
-TASK: classification  # Task type (e.g., 'classification', 'regression')
+TASK: classification  # Task type ('classification' or 'survival')
 
 CLASS_TO_IND:
   MSS: 0  # Class index for 'MSS'
@@ -131,5 +131,5 @@ REG_TERMS:
   DECAY_TYPE: Gaussian  # Type of weight decay (e.g., 'Gaussian', 'Exponential')
   ALPHA: 0.001  # Weight decay alpha coefficient
   DECAY_CLIP: 0.001  # Clip value for decay
-  DECAY_LR_SCALE: 120  # Scale factor for decay learning rate
+  DECAY_LR_SCALE: 100  # Scale factor for decay learning rate
 
