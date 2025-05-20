@@ -135,4 +135,5 @@ REG_TERMS:
   ALPHA: 0.001  # Weight decay alpha coefficient
   DECAY_CLIP: 0.001  # Clip value for decay (tau in the paper)
   DECAY_LR_SCALE: 100  # Scale factor for decay learning rate
+  DIV_LOSS: 'gaussian_binning'
 
