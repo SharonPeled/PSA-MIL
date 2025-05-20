@@ -10,6 +10,17 @@
 ## PSA-MIL Overview
 ![Main Pipeline](figures/main_fig.jpg)
 
+
+
+## 📝 Updates
+
+- **2025-05-20** – Refactored core modules for improved code structure and utility.
+- **2025-05-15** – Added support for the survival prediction task.
+- **2025-04-17** – Introduced a diversity loss option using Gaussian binning, which showed greater stability compared to the Monte Carlo-based approach.
+- **2025-03-26** – Initial project launch 🚀
+
+
+
 ## Highlights
 - **State-of-the-Art Performance** – PSA-MIL achieves leading results in WSI classification with adaptive spatial modeling.
 - **Dynamic Local Attention** – Learns spatial dependencies dynamically, avoiding predefined spatial constraints.
