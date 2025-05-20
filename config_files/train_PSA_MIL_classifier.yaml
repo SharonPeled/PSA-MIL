@@ -122,7 +122,7 @@ DEPTH: 1
 QKV_BIAS: true  # Whether to use bias in the QKV (query-key-value) attention layers
 POOL_TYPE: attention  # Type of pooling layer (e.g., 'attention', 'max', 'avg')
 NUM_HEADS: 3  # Number of attention heads in multi-head attention
-ATTN_DIM: 32  # Dimension of attention layers
+ATTN_DIM: 32  # Dimension of attention head
 
 PATCH_DROP_RATE: !!float '0'  # Dropout rate for patches in training
 
