@@ -33,6 +33,7 @@ class SpatialMultiHeadAttentionMIL(nn.Module):
                  norm_layer=nn.LayerNorm,
                  mlp_layer=Mlp):
         super(SpatialMultiHeadAttentionMIL, self).__init__()
+        attn_dim = attn_dim * num_heads
         self.adapter = ResidualFullyConnected(n_channels=embed_dim, m_dim=attn_dim, numLayer_Res=num_layers_adapter)
         self.patch_drop_rate = patch_drop_rate
         self.head = nn.Linear(attn_dim, num_classes)
