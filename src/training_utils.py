@@ -18,7 +18,6 @@ def train(df, train_transform, test_transform, logger, callbacks, model, dataset
                                                            num_folds=Configs.get('NUM_FOLDS'),
                                                            random_seed=Configs.get('RANDOM_SEED'))
     cross_validate(df, split_obj, train_transform, test_transform, logger, model, callbacks, dataset_fn, **kwargs)
-    Logger.log(f"Finished.", log_importance=1)
 
 
 def cross_validate(df, split_obj, train_transform, test_transform, logger, model, callbacks, dataset_fn, **kwargs):
