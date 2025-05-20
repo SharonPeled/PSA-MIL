@@ -59,6 +59,8 @@ We used the following repo for tissue segmentation and cropping:
 
 🔗 **WSI Preprocessing Repository**: [whole-slide-images-preprocessing-for-deep-learning](https://github.com/SharonPeled/whole-slide-images-preprocessing-for-deep-learning)
 
+We preprocessed slides at a field of view (FoV) of 20x (0.5µm/px), tessellate into 512x512 pixel tiles.
+
 Once preprocessing is complete, patch coordinates would be embedded directly within the patch filepath (e.g. tissue_10_103.jpg).
 
 ---

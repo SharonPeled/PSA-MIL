@@ -88,7 +88,7 @@ class AbstractClassifier(pl.LightningModule):
     def loss_survival(self, scores, y):
         t = y[:, 0]  # times
         c = y[:, 1]  # censorships
-        y_discrete = y[:, 1]  # bins
+        y_discrete = y[:, 2]  # bins
         # scores (batch_size, num_bins)
         return NLLSurvLoss.functional(scores, y_discrete, t, c)
 
@@ -113,7 +113,7 @@ class AbstractClassifier(pl.LightningModule):
         x, y, path = batch[0], batch[2], batch[5]
 
         logits = self.forward(batch)
-        loss = self.loss(logits, logits, y, path)  # bandaid fix TODO:
+        loss = self.loss(logits, logits, y, path)
 
         self.logger.experiment.log_metric(self.logger.run_id, "train_loss", loss.detach().cpu())
         return loss
