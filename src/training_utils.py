@@ -1,16 +1,10 @@
 import numpy as np
 import pandas as pd
-from timm.models.vision_transformer import VisionTransformer
-import timm
-from torch import nn
-import torch
 from src.components.objects.Logger import Logger
-from torchvision import transforms
 from src.configs import Configs
 from torch.utils.data import DataLoader
 from torch.multiprocessing import set_sharing_strategy
 import pytorch_lightning as pl
-from PIL import Image
 from copy import deepcopy
 from datetime import datetime
 from pytorch_lightning.strategies import DDPStrategy

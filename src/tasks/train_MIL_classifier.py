@@ -32,7 +32,8 @@ def init_dataset():
 
 
 def init_model():
-    model = PSAClassifier(num_classes=Configs.get('NUM_CLASSES'),
+    model = PSAClassifier(num_classes=Configs.get('NUM_CLASSES'),\
+                          task=Configs.get('TASK'),
                           embed_dim=Configs.get('EMBED_DIM'),
                           attn_dim=Configs.get('ATTN_DIM'),
                           num_heads=Configs.get('NUM_HEADS'),
@@ -73,7 +74,6 @@ def collate(batch):
 
 def psa_collate(batch):
     tile_embeddings, c, y, slide_uuid, patient_id, path, row, col, distance, indices = zip(*batch)
-    # print(distance[0].device, indices[0].device)
     return [tile_embeddings, torch.tensor(c), torch.tensor(y), slide_uuid, patient_id, path, row, col, distance, indices]
 
 

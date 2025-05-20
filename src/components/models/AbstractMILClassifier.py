@@ -1,5 +1,3 @@
-from typing import Any, Optional
-
 from src.components.objects.Logger import Logger
 from src.training_utils import lr_scheduler_linspace_steps, lr_scheduler_cosspace_steps
 from src.components.models.AbstractClassifier import AbstractClassifier
@@ -61,24 +59,6 @@ class AbstractMILClassifier(AbstractClassifier):
         total_size = total_params * 4  # Assuming 32-bit (4 bytes) floating point numbers
         total_size = round(total_size / (1024 ** 3), 2) # gb
         self.logger.experiment.log_metric(self.logger.run_id, "total_size", total_size)
-        # if self.log_flops:
-        #     from torchinfo import summary
-        #     device = self.device
-        #     with torch.no_grad():
-        #         self.to('cpu')
-        #         input_data = [[torch.rand(1, 4975, 384),], ]
-        #         model_summary = summary(
-        #             self,
-        #             input_data=input_data,
-        #             col_names=["output_size", "num_params", "mult_adds"],
-        #             verbose=0
-        #         )
-        #         self.logger.experiment.log_metric(self.logger.run_id, "flops", model_summary.total_mult_adds)
-        #         Logger.log(f"""FLOPS logged: {model_summary.total_mult_adds:,}""", log_importance=1)
-        #         trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
-        #         Logger.log(f'trainable_params {trainable_params:,}', log_importance=1)
-        #         self.to(device)
-        #         self.log_flops = False
 
     def init_schedulers(self, num_epochs, steps_per_epoch):
         tot_steps = num_epochs * steps_per_epoch + 1
@@ -103,14 +83,12 @@ class AbstractMILClassifier(AbstractClassifier):
             for param_group in opt.param_groups:
                 param_group['lr'] *= (self.lr_list[self.global_iter] / self.lr_list[self.global_iter-1])
                 param_group['weight_decay'] = self.wd_list[self.global_iter]
-                # print( f"lr", param_group['lr'])
 
         else:
             for opt in self.optimizers(use_pl_optimizer=False):
                 for param_group in opt.param_groups:
                     param_group['lr'] *= (self.lr_list[self.global_iter] / self.lr_list[self.global_iter - 1])
                     param_group['weight_decay'] = self.wd_list[self.global_iter]
-                # print( f"lr", param_group['lr'])
 
         self.logger.experiment.log_metric(self.logger.run_id, f"lr", self.lr_list[self.global_iter])
         self.logger.experiment.log_metric(self.logger.run_id, f"wd", self.wd_list[self.global_iter])
@@ -134,6 +112,7 @@ class AbstractMILClassifier(AbstractClassifier):
         self.epoch_init_time = time.time()
 
         if self.val_loader is not None:
+            # validation and bagging
             outputs = []
             with torch.no_grad():
                 self.eval()
