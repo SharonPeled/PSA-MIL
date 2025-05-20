@@ -86,7 +86,7 @@ class SpatialMultiHeadAttentionMIL(nn.Module):
         x = self.adapter(x)
         # x, row, col = self.patch_drop(x, row, col)
         x = self.pos_embed(x)
-        x = self.blocks(x, distance, indices, row, col, (inference, slide_uuid, logger))
+        x, _, _, _, _, _ = self.blocks(x, distance, indices, row, col, (inference, slide_uuid, logger))
         x = self.layer_norm(x)
         return x
 
