@@ -1,6 +1,6 @@
 # PSA-MIL: Probabilistic Spatial Attention-Based Multiple Instance Learning for Whole Slide Image Classification  
 
-
+[![arXiv](https://img.shields.io/badge/arXiv-2503.16284-b31b1b)](https://arxiv.org/abs/2503.16284)
 ![SOTA Performance](https://img.shields.io/badge/SOTA-✔️-green)
 ![Dynamic Local Attention](https://img.shields.io/badge/Adaptive_K-Learned-dodgerblue)
 ![Computational Savings](https://img.shields.io/badge/Reduced_FLOPs-🔻-purple)
