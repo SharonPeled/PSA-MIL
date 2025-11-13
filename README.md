@@ -110,7 +110,7 @@ The main training pipeline is executed using `main.py`. Configurations are provi
 
 ### **Basic Run**
 ```
-python main.py --train --config configs/CAMELYON16.yaml
+python main.py --config configs/CAMELYON16.yaml
 ```
 
 ### **Configuration File**

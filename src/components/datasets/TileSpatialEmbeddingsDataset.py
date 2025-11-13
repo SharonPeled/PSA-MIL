@@ -12,7 +12,11 @@ class TileSpatialEmbeddingsDataset(TileEmbeddingsDataset):
         super(TileSpatialEmbeddingsDataset, self).__init__(df=df, cohort_to_index=cohort_to_index,
                                                            transform=transform,
                                                            target_transform=target_transform)
+        # Assume that df.path refers to the tensor (tile embeddings) file path,
+        # and in the same folder there is a df_slide.csv file containing metadata (e.g., tile locations, etc.).
+        # if you followed the recommended WSI preprocessing, each tensor path will have a sibling df_slide.csv with metadata.
         self.df['slide_df_path'] = self.df.path.apply(lambda p: os.path.join(os.path.dirname(p), 'df_slide.csv'))
+        
         self.df_slides_dict = {row['slide_uuid']: pd.read_csv(row['slide_df_path']) for _, row in
                                self.df.drop_duplicates(subset=['slide_uuid']).iterrows()}
         for slide_uuid, slide_df in self.df_slides_dict.items():
