@@ -1,14 +1,16 @@
 # PSA-MIL: Probabilistic Spatial Attention-Based Multiple Instance Learning for Whole Slide Image Classification  
 
+> **Accepted at WACV 2026**
+
 <div align="center">
 
   <a href="https://arxiv.org/abs/2503.16284">
-    <img src="https://img.shields.io/badge/arXiv-2503.16284-b31b1b" alt="arXiv">
+    <img src="https://img.shields.io/badge/arXiv-2503.16284-b31b1b.svg" alt="arXiv">
   </a>
-  <img src="https://img.shields.io/badge/SOTA-✔️-green" alt="SOTA Performance">
-  <img src="https://img.shields.io/badge/Adaptive_K-Learned-dodgerblue" alt="Dynamic Local Attention">
-  <img src="https://img.shields.io/badge/Reduced_FLOPs-🔻-purple" alt="Computational Savings">
-  <img src="https://img.shields.io/badge/Diversity_Loss-✓-orange" alt="Multi-Head Diversity">
+  <img src="https://img.shields.io/badge/Conference-WACV_2026-blue.svg" alt="WACV 2026">
+  <img src="https://img.shields.io/badge/Method-Probabilistic_Spatial_Attention-purple.svg" alt="Probabilistic Spatial Attention">
+
+  <img src="https://img.shields.io/badge/Evaluation-4_Datasets_•_7_Tasks-green.svg" alt="Comprehensive Evaluation">
 
 </div>
 
@@ -20,7 +22,8 @@
 
 
 ## 📝 Updates
-
+- **2025-11-07** – Added ready-to-use configuration files for datasets including CAMELYON16 and TCGA.
+- **2025-11-07** – Accepted at **WACV 2026** 🎉
 - **2025-05-20** – Refactored core modules for improved code structure and utility.
 - **2025-05-15** – Added support for the survival prediction task.
 - **2025-04-17** – Introduced a diversity loss option using Gaussian binning, which showed greater stability compared to the Monte Carlo-based approach.
@@ -28,11 +31,12 @@
 
 
 
-## Highlights
-- **State-of-the-Art Performance** – PSA-MIL achieves leading results in WSI classification with adaptive spatial modeling.
-- **Dynamic Local Attention** – Learns spatial dependencies dynamically, avoiding predefined spatial constraints.
-- **Computational Efficiency** – Reduces self-attention complexity using a spatial pruning strategy.
-- **Diversity Loss** – Encourages distinct spatial patterns across attention heads to enhance feature representation.
+## 🚀 Highlights
+- **State-of-the-Art Performance** – Achieves leading results on a variety of WSI-related benchmarks.
+- **Probabilistic Spatial Attention** – Learns spatial dependencies through adaptive, data-driven priors.  
+- **Dynamic Local Attention** – Derives spatial scope (K) during training, avoiding fixed spatial assumptions.  
+- **Computational Efficiency** – Reduces self-attention quadratic complexity using a spatial pruning strategy.
+- **Diversity Loss** – Promotes distinct spatial patterns across attention heads to enhance feature representation.
 
 ---
 
@@ -57,7 +61,7 @@ It introduces a **probabilistic formulation of self-attention** to incorporate *
   - PSA-MIL introduces an **entropy-based diversity loss** to promote **distinct spatial representations** across attention heads.
 
 ### Results:
-- PSA-MIL achieves **SOTA performance** on WSI classification benchmarks.
+- PSA-MIL achieves **SOTA performance** on multiple WSI-related tasks, such as classification, localization and survival analysis.
 - Outperforms both **contextual and non-contextual MIL approaches** while significantly **reducing computational costs**.
 - Enables **efficient, adaptive spatial modeling** for large-scale histopathology analysis.
 
@@ -106,15 +110,15 @@ The main training pipeline is executed using `main.py`. Configurations are provi
 
 ### **Basic Run**
 ```
-python main.py --train-PSA-MIL-classifier --config_filepath configs/default.yaml
+python main.py --train --config configs/CAMELYON16.yaml
 ```
 
-### **Configuration File (`config_filepath`)**
+### **Configuration File**
 - **All training, dataset, and model parameters** are defined in the config YAML.
 - Modify it to adjust **batch size, learning rate, model architecture, spatial pruning thresholds**, etc.
 
 ## **Example Configurations**
-See config_files/train_PSA_MIL_classifier.yaml for available configs and additional documentation. 
+See configs/demo.yaml for available configs and additional documentation. 
 
 ---
 
