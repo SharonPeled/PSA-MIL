@@ -8,7 +8,7 @@ class TileSpatialEmbeddingsDataset(TileEmbeddingsDataset):
     """
     Assumes the coordinates is in the tile path
     """
-    def __init__(self, df, cohort_to_index=None, transform=None, target_transform=None):
+    def __init__(self, df, cohort_to_index=None, transform=None, target_transform=None, max_slide_size=None):
         super(TileSpatialEmbeddingsDataset, self).__init__(df=df, cohort_to_index=cohort_to_index,
                                                            transform=transform,
                                                            target_transform=target_transform)
@@ -27,6 +27,13 @@ class TileSpatialEmbeddingsDataset(TileEmbeddingsDataset):
     def __getitem__(self, index):
         tile_embeddings, c, y, slide_uuid, patient_id, path = super().__getitem__(index)
         df_slide = self.df_slides_dict[slide_uuid]
+        assert len(df_slide) == tile_embeddings.size(0), "Size of df_slides does not match the number of tiles in the tensor"
+
+        if self.max_slide_size:
+            sampled_indices = torch.randperm(len(df_slide))[:self.max_slide_size]
+            tile_embeddings = tile_embeddings[sampled_indices]
+            df_slide = df_slide.iloc[sampled_indices.numpy()].reset_index(drop=True)
+
         row = torch.from_numpy(df_slide['row'].values)
         col = torch.from_numpy(df_slide['col'].values)
         points = torch.stack((row.float(), col.float()), dim=1)
