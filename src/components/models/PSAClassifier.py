@@ -20,6 +20,7 @@ class PSAClassifier(AbstractMILClassifier):
 
     def configure_optimizers(self):
         # scaling the lr of the decay functions to allow for faster converges
+        # more details regarding this are in the supplementary material of the paper
         scaled_lr_params = sum([list(self.spatial_mil.blocks[i].attn.decay_nn.parameters())
                             for i in range(len(self.spatial_mil.blocks))], [])
         # Get all other parameters except those in decay_nn

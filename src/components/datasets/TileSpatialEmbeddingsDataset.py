@@ -8,11 +8,17 @@ class TileSpatialEmbeddingsDataset(TileEmbeddingsDataset):
     """
     Assumes the coordinates is in the tile path
     """
-    def __init__(self, df, cohort_to_index=None, transform=None, target_transform=None):
+    def __init__(self, df, cohort_to_index=None, transform=None, target_transform=None, max_slide_size=None):
         super(TileSpatialEmbeddingsDataset, self).__init__(df=df, cohort_to_index=cohort_to_index,
                                                            transform=transform,
                                                            target_transform=target_transform)
+        self.max_slide_size = max_slide_size
+        
+        # Assume that df.path refers to the tensor (tile embeddings) file path,
+        # and in the same folder there is a df_slide.csv file containing metadata (e.g., tile locations, etc.).
+        # if you followed the recommended WSI preprocessing, each tensor path will have a sibling df_slide.csv with metadata.
         self.df['slide_df_path'] = self.df.path.apply(lambda p: os.path.join(os.path.dirname(p), 'df_slide.csv'))
+        
         self.df_slides_dict = {row['slide_uuid']: pd.read_csv(row['slide_df_path']) for _, row in
                                self.df.drop_duplicates(subset=['slide_uuid']).iterrows()}
         for slide_uuid, slide_df in self.df_slides_dict.items():
@@ -23,6 +29,13 @@ class TileSpatialEmbeddingsDataset(TileEmbeddingsDataset):
     def __getitem__(self, index):
         tile_embeddings, c, y, slide_uuid, patient_id, path = super().__getitem__(index)
         df_slide = self.df_slides_dict[slide_uuid]
+        assert len(df_slide) == tile_embeddings.size(0), "Size of df_slides does not match the number of tiles in the tensor"
+
+        if self.max_slide_size:
+            sampled_indices = torch.randperm(len(df_slide))[:self.max_slide_size]
+            tile_embeddings = tile_embeddings[sampled_indices]
+            df_slide = df_slide.iloc[sampled_indices.numpy()].reset_index(drop=True)
+
         row = torch.from_numpy(df_slide['row'].values)
         col = torch.from_numpy(df_slide['col'].values)
         points = torch.stack((row.float(), col.float()), dim=1)

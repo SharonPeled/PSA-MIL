@@ -95,9 +95,6 @@ class AbstractMILClassifier(AbstractClassifier):
         self.global_iter += 1
 
     def on_train_batch_end(self, outputs, batch, batch_idx):
-        # current_memory = torch.cuda.memory_allocated(0)
-        # current_memory = round(current_memory / (1024 ** 3), 2)  # gb
-        # self.logger.experiment.log_metric(self.logger.run_id, "current_memory", current_memory)
         self.epoch_loss += outputs['loss'].detach().cpu()
         if self.global_iter % self.epoch_size == 0:
             self.manual_on_epoch_end()
@@ -170,11 +167,6 @@ class AbstractMILClassifier(AbstractClassifier):
         super(AbstractMILClassifier, self).on_train_end()
         avg_epoch_time = np.mean(self.epoch_times_list)
         self.logger.experiment.log_metric(self.logger.run_id, "avg_epoch_time", avg_epoch_time)
-        if self.device != 'cpu':
-            peak_memory = torch.cuda.max_memory_allocated()
-            peak_memory = round(peak_memory / (1024 ** 3), 2)  # gb
-            self.logger.experiment.log_metric(self.logger.run_id, "peak_memory", peak_memory)
-            Logger.log(f"""Peak Memory: {peak_memory}""", log_importance=1)
 
     def test_step(self, batch, batch_idx):
         outputs = super(AbstractMILClassifier, self).test_step(batch, batch_idx)

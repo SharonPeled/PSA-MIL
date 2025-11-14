@@ -26,7 +26,8 @@ def init_task():
 
 
 def init_dataset():
-    dataset_fn = partial(TileSpatialEmbeddingsDataset, cohort_to_index=Configs.get('COHORT_TO_IND'))
+    dataset_fn = partial(TileSpatialEmbeddingsDataset, cohort_to_index=Configs.get('COHORT_TO_IND'), 
+                                                       max_slide_size=Configs.get('MAX_SLIDE_SIZE'))
     collate_fn = psa_collate
     return dataset_fn, collate_fn
 

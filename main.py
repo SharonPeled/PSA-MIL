@@ -11,11 +11,11 @@ matplotlib.use('agg')
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-config_filepath', type=str, required=True)
+    parser.add_argument('--config', type=str, required=True)
 
     args = parser.parse_args()
 
-    Configs.deploy_yaml_file(args.config_filepath)
+    Configs.deploy_yaml_file(args.config)
 
     set_global_configs(verbose=Configs.get('VERBOSE'),
                        log_file_args=Configs.get('PROGRAM_LOG_FILE_ARGS'),
