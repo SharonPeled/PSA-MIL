@@ -22,7 +22,7 @@
 
 
 ## 📝 Updates
-- **2025-11-07** – Added ready-to-use configuration files for datasets including CAMELYON16 and TCGA.
+- **2025-11-14** – Added ready-to-use configuration files for datasets including CAMELYON16 and TCGA.
 - **2025-11-07** – Accepted at **WACV 2026** 🎉
 - **2025-05-20** – Refactored core modules for improved code structure and utility.
 - **2025-05-15** – Added support for the survival prediction task.
