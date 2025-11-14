@@ -1,0 +1,75 @@
+# mlflow
+EXPERIMENT_NAME: "MSI_CRC"
+RUN_NAME: "PSA_MIL"
+RUN_DESCRIPTION: ''
+MLFLOW_DIR: "/path/to/mlflow/directory"  # Directory where MLflow logs and artifacts are stored
+
+# general
+RANDOM_SEED: 1234
+VERBOSE: 2  # 1 logs to LOG_FILE, 2 logs to console, 3 logs to both to file and console
+LOG_IMPORTANCE: 1  # 0 (all), 1 or 2 (only high importance logs)
+PROGRAM_LOG_FILE_ARGS:   # only to console
+LOG_FORMAT:
+  format: '%(process)d  %(asctime)s  [%(name)s] - %(message)s'
+  datefmt: '%d-%m-%y %H:%M:%S'
+
+# data files (input)
+DF_LABELS_PATH: "/path/to/labels.csv"
+# Path to the CSV file containing labels for classification (e.g., MSI vs. MSS)
+DF_TILE_EMBEDDINGS_PATH: "/path/to/tile_embeddings.csv"
+# Path to the CSV file containing tile embeddings (features extracted from tiles)
+
+# saving (outputs)
+EXPERIMENT_SAVE_ARTIFACTS_DIR: "/path/to/save/experiments"
+# Directory where experiment artifacts (models, logs, etc.) will be saved
+SAVE_MODEL: false
+SAVE_DF_TEST: false
+SAVE_DF_TRAIN: false
+SAVE_DF_PRED_TEST: false
+SAVE_DF_PRED_TRAIN: false
+LABEL_COL: 'msi_status'
+TASK: classification
+CLASS_TO_IND:
+  MSS: 0
+  MSI: 1
+COHORT_TO_IND:
+  CRC: 0
+NUM_FOLDS: 5
+CONTINUE_FROM_FOLD:
+SINGLE_FOLD: false
+STRATIFIED_COLS: ['y', 'cohort']
+NUM_EPOCHS: 15
+CONCAT_TRAIN_TO_SINGLE_EPOCH: true # concatenating all samples to one epoch
+NUM_DEVICES: 1
+NUM_NODES: 1
+DEVICE: 'gpu'
+MAX_SLIDE_SIZE: 8000 # depending on you GPU capabilities, samples tiles randomly each time
+TEST_BATCH_SIZE: 8
+TRAIN_BATCH_SIZE: 8
+NUM_WORKERS_TRAIN: 4
+NUM_WORKERS_TEST: 4
+LEARNING_RATE_PAIRS: '[0, [(1e-6, 0.1), (1e-4, 0.9), (1e-4, -1), (1e-6, None)]]' # scheduling: 0 - linear, 1 - cos
+WEIGHT_DECAY_PAIRS: '[0, [(1e-6, 0.1), (1e-5, 0.9), (5e-5, -1), (1e-4, None)]]'
+GRAD_CLIP:
+SLIDE_WEIGHTING_STRATEGY: 'class_balance'
+
+# bagging
+VALIDATION_SIZE:
+VAL_METRIC: 'total_auc'
+NUM_MODELS: 3
+
+# network configs
+EMBED_DIM: 384  # Tile embed dim
+NUM_RESIDUAL_LAYERS: 2
+DEPTH: 1
+QKV_BIAS: true
+POOL_TYPE: attention
+NUM_HEADS: 3
+ATTN_DIM: 96
+REG_TERMS:
+  DECAY_TYPE: Gaussian
+  ALPHA: 0.001
+  DECAY_CLIP: 0.001
+  DECAY_LR_SCALE: 100
+  DIV_LOSS: gaussian_binning
+

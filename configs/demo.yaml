@@ -50,12 +50,9 @@ SAVE_DF_PRED_TRAIN: false  # Whether to save training set prediction results
 LABEL_COL: 'msi_status'  # Name of the column in the dataset that contains the label
 TASK: classification  # Task type ('classification' or 'survival')
 
-CLASS_TO_IND:
-  MSS: 0  # Class index for 'MSS'
-  MSI: 1  # Class index for 'MSI'
+CLASS_TO_IND: {}  # Mapping of class names to integer indices (e.g., MSI: 0, MSS: 1)
 
-COHORT_TO_IND:
-  CRC: 0  # Cohort index for 'CRC'
+COHORT_TO_IND: {}  # Mapping of cohort names to integer indices (e.g., CRC: 0)
 
 # ================================
 # Cross-validation
@@ -82,6 +79,8 @@ TEST_BATCH_SIZE: 8  # Batch size for testing
 TRAIN_BATCH_SIZE: 8  # Batch size for training
 NUM_WORKERS_TRAIN: 6  # Number of workers for loading training data
 NUM_WORKERS_TEST: 1  # Number of workers for loading test data
+
+MAX_SLIDE_SIZE:  # Maximum number of tiles to sample from a slide (for GPU memory management)
 
 # ================================
 # Optimization
@@ -123,8 +122,6 @@ QKV_BIAS: true  # Whether to use bias in the QKV (query-key-value) attention lay
 POOL_TYPE: attention  # Type of pooling layer (e.g., 'attention', 'max', 'avg')
 NUM_HEADS: 3  # Number of attention heads in multi-head attention
 ATTN_DIM: 32  # Dimension of attention head
-
-PATCH_DROP_RATE: !!float '0'  # Dropout rate for patches in training
 
 # ================================
 # Regularization Terms
