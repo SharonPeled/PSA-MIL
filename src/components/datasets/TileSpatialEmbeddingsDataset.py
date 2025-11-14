@@ -12,6 +12,8 @@ class TileSpatialEmbeddingsDataset(TileEmbeddingsDataset):
         super(TileSpatialEmbeddingsDataset, self).__init__(df=df, cohort_to_index=cohort_to_index,
                                                            transform=transform,
                                                            target_transform=target_transform)
+        self.max_slide_size = max_slide_size
+        
         # Assume that df.path refers to the tensor (tile embeddings) file path,
         # and in the same folder there is a df_slide.csv file containing metadata (e.g., tile locations, etc.).
         # if you followed the recommended WSI preprocessing, each tensor path will have a sibling df_slide.csv with metadata.
