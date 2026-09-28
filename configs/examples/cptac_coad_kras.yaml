@@ -8,8 +8,8 @@ experiment:
   seed: 1234
 
 data:
-  task_dir: /rg/freiman_prj/sharonpe/phd/patho_bench/cptac_coad/KRAS_mutation
-  trident_dir: /rg/freiman_prj/sharonpe/phd/data/TRIDENT_processed_slides/CPTAC/CPTAC-COAD/20x_512px_0px_overlap
+  task_dir: patho_bench/cptac_coad/KRAS_mutation
+  trident_dir: /20x_512px_0px_overlap
   encoder: conch_v15
   max_tiles: 2048
 

@@ -17,7 +17,7 @@
 ![Main Pipeline](figures/main_fig.jpg)
 
 ## Updates
-- **2026-09-28** – Refactored the code. Slide features now come from [TRIDENT](https://github.com/mahmoodlab/TRIDENT) HDF5 files, tasks are plain split folders (`config.yaml` + `k=all.tsv`), and spatial attention is vectorized. Train with `python train.py --config <yaml>`.
+- **2026-09-28** – Complete code refactor. Slide features now come from [TRIDENT](https://github.com/mahmoodlab/TRIDENT) HDF5 files, tasks are plain split folders (`config.yaml` + `k=all.tsv`), and spatial attention is vectorized. Train with `python train.py --config <yaml>`.
 - **2025-11-14** – Added ready-to-use configuration files for datasets including CAMELYON16 and TCGA.
 - **2025-11-07** – Accepted at **WACV 2026**.
 - **2025-05-20** – Refactored core modules for improved code structure and utility.
@@ -101,10 +101,12 @@ logits = model(features, coords)  # features (N, D), coords (N, 2) in tile steps
 # Reference
 
 ```
-@article{peled2025psa,
-  title={PSA-MIL: A Probabilistic Spatial Attention-Based Multiple Instance Learning for Whole Slide Image Classification},
+@inproceedings{peled2026psa,
+  title={PSA-MIL: a probabilistic spatial attention-based multiple instance learning for whole slide image classification},
   author={Peled, Sharon and Maruvka, Yosef E and Freiman, Moti},
-  journal={arXiv preprint arXiv:2503.16284},
-  year={2025}
+  booktitle={2026 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  pages={1211--1220},
+  year={2026},
+  organization={IEEE}
 }
 ```
