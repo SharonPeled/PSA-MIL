@@ -1,14 +1,8 @@
 torch
-torchvision
-Pillow
-scikit-learn
+pytorch-lightning
 numpy
 pandas
-matplotlib
+scikit-learn
 PyYAML
-timm
-pytorch-lightning
-tqdm
-opencv-python
+h5py
 mlflow
-

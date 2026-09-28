@@ -1,0 +1,55 @@
+# Template. Copy this file and set data.task_dir and data.trident_dir.
+# A task folder contains config.yaml and k=all.tsv (case_id, slide_id, label, fold_*).
+
+experiment:
+  name: psa_mil
+  run_name: run
+  description: ""
+  save_dir: runs/psa_mil
+  seed: 1234
+  mlflow_dir: null
+
+data:
+  task_dir: null
+  trident_dir: null
+  encoder: conch_v15
+  max_tiles: null          # random tile cap per slide; null keeps every tile
+
+model:
+  embed_dim: null          # null infers the width from the first H5 file
+  num_heads: 3
+  depth: 1
+  attn_dim: 96             # per-head width; token width is attn_dim * num_heads
+  num_residual_layers: 2
+  pool_type: attention     # attention or mean
+  qkv_bias: true
+  mlp_ratio: 4.0
+  dropout: 0.0
+  attention_chunk: 256     # query chunk for memory; does not change the math
+  decay:
+    type: Gaussian         # Gaussian, Exponential, InverseQuadratic (Cauchy)
+    alpha: 0.001
+    clip: 0.001            # pruning threshold tau
+    lr_scale: 100
+    div_loss: gaussian_binning
+    min_local_k: 1
+    max_local_k: 25
+    init_k: 7
+
+train:
+  num_epochs: 15
+  batch_size: 8
+  num_workers: 4
+  folds: null              # null uses every fold_* column; or a list such as [0]
+  accelerator: auto
+  devices: 1
+  class_balance: true
+  # Piecewise linear. steps < 1 is a fraction of the steps still remaining; -1 takes the rest.
+  lr:
+    - {from: 1.0e-6, to: 1.0e-4, steps: 0.1}
+    - {from: 1.0e-4, to: 1.0e-4, steps: 0.9}
+    - {from: 1.0e-4, to: 1.0e-6, steps: -1}
+  weight_decay:
+    - {from: 1.0e-6, to: 1.0e-5, steps: 0.1}
+    - {from: 1.0e-5, to: 5.0e-5, steps: 0.9}
+    - {from: 5.0e-5, to: 1.0e-4, steps: -1}
