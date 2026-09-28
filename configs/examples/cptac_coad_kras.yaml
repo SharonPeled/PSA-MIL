@@ -1,0 +1,34 @@
+# CPTAC-COAD KRAS mutation. Same task-folder layout as any other split:
+# config.yaml describes the label, k=all.tsv assigns fold_0 ... fold_N.
+
+experiment:
+  name: cptac_coad_kras
+  run_name: psa_mil
+  save_dir: runs/cptac_coad_kras
+  seed: 1234
+
+data:
+  task_dir: /rg/freiman_prj/sharonpe/phd/patho_bench/cptac_coad/KRAS_mutation
+  trident_dir: /rg/freiman_prj/sharonpe/phd/data/TRIDENT_processed_slides/CPTAC/CPTAC-COAD/20x_512px_0px_overlap
+  encoder: conch_v15
+  max_tiles: 2048
+
+model:
+  embed_dim: 768
+  num_heads: 3
+  depth: 1
+  attn_dim: 96
+  num_residual_layers: 2
+  pool_type: attention
+  decay:
+    type: Gaussian
+    alpha: 0.001
+    clip: 0.001
+    lr_scale: 100
+    div_loss: gaussian_binning
+
+train:
+  num_epochs: 15
+  batch_size: 2
+  num_workers: 4
+  folds: [0, 1, 2, 3, 4]
